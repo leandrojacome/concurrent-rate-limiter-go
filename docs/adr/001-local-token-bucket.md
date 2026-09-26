@@ -1,13 +1,13 @@
-# ADR-001: token bucket local
+# ADR-001: Local token bucket
 
 ## Status
 
-Aceito para o escopo do portfólio.
+Accepted for the portfolio scope.
 
-## Decisão
+## Decision
 
-Usar token bucket em memória protegido por mutex e explicitar a limitação distribuída.
+Use an in-memory token bucket protected by a mutex and explicitly document the distributed limitation.
 
-## Consequências
+## Consequences
 
-Baixa latência e teste determinístico. Não há coordenação entre réplicas nem limpeza de chaves inativas; ambos são requisitos de uma evolução produtiva.
+This provides low latency and deterministic tests. There is no coordination across replicas or cleanup of inactive keys; both are production-evolution requirements.

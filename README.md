@@ -1,30 +1,28 @@
-# Concurrent Rate Limiter — Go
+# Concurrent Rate Limiter in Go
 
-Limitador token-bucket seguro para concorrência, com handler HTTP e relógio injetável. Demonstra uma decisão típica de proteção de APIs sem esconder a regra em middleware de framework.
+A concurrency-safe token-bucket limiter with an HTTP handler and injectable clock. It demonstrates a common API-protection decision without hiding the rule in framework middleware.
 
-## Arquitetura e padrões
+## Architecture and patterns
 
-- **Strategy (GoF):** a porta `Limiter` permite trocar token bucket por janela deslizante.
-- **Adapter:** HTTP traduz cabeçalhos/status sem entrar no núcleo.
-- **Dependency Inversion:** relógio e limitador são interfaces pequenas, definidas pelo consumidor.
-- Mutex protege invariantes; os testes executam também com detector de corrida.
-- **DDD proporcional:** bounded context de Proteção de Tráfego, linguagem de bucket/tokens/reposição e `Decision` como value object.
+- **Adapter:** HTTP translates headers and status codes without entering the core.
+- **Dependency Inversion:** clock and limiter are small interfaces defined by their consumer.
+- A mutex protects invariants; tests also run with the Go race detector.
+- **Pragmatic DDD:** the Traffic Protection bounded context uses bucket, tokens, refill, and decision as its ubiquitous language.
+
+## Run
 
 ```bash
 go test -race ./...
-go vet ./...
-govulncheck ./...
-go run ./cmd/server
 ```
 
-Veja [Arquitetura](docs/architecture.md) e [ADR-001](docs/adr/001-local-token-bucket.md).
+See [Architecture](docs/architecture.md) and [ADR-001](docs/adr/001-local-token-bucket.md).
 
 ## Trade-offs
 
-O estado local evita dependência de rede e oferece baixa latência, mas cada réplica mantém limites independentes. Coordenação global requer Redis, banco ou roteamento consistente, com impacto de disponibilidade e latência.
+Local state avoids a network dependency and offers low latency, but each replica maintains independent limits. Global coordination requires Redis, a database, or consistent routing, with availability and latency implications.
 
-Repository e Visitor foram descartados por não resolverem uma variação presente: o estado é parte do algoritmo e existe apenas um tipo de decisão.
+Repository and Visitor were rejected because they do not solve a current variation: state belongs to the local algorithm and there is only one decision type.
 
-## Licença
+## License
 
-MIT.
+MIT

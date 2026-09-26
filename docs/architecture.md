@@ -1,20 +1,19 @@
-# Arquitetura
+# Architecture
 
-## Contexto e linguagem
+## Domain model
 
-Bounded context **Proteção de Tráfego**. Bucket, capacidade, tokens, reposição, cliente e retry compõem a linguagem ubíqua. `Decision` é um value object imutável; cada bucket interno é a entidade de estado identificada pela chave do cliente.
+The **Traffic Protection** bounded context uses bucket, capacity, tokens, refill, client, and retry as its ubiquitous language. `Decision` is an immutable value object; each internal bucket is the stateful entity identified by a client key.
 
-## Fronteiras
+## Layers
 
-- **Domínio:** decisão observável pelo consumidor.
-- **Aplicação:** algoritmo token bucket e portas `Clock`/`Limiter`.
-- **Infraestrutura:** relógio do sistema, HTTP e composição do binário.
+- **Domain:** the decision observed by the consumer.
+- **Application:** token-bucket algorithm and `Clock`/`Limiter` ports.
+- **Infrastructure:** system clock, HTTP adapter, and binary composition.
 
-## Padrões e alternativas
+## Patterns and alternatives
 
-- **Strategy:** `Limiter` permite trocar token bucket por janela deslizante. Condicionais por algoritmo foram descartadas.
-- **Adapter:** handler converte protocolo HTTP em chave/decisão.
-- Repository não foi introduzido: o estado pertence ao algoritmo local; uma versão distribuída criaria uma porta de armazenamento própria.
-- Visitor foi descartado porque há um único tipo de decisão e nenhuma árvore de elementos.
+- **Adapter:** the handler converts HTTP protocol details into a key and decision.
+- Repository is intentionally absent: state belongs to the local algorithm. A distributed implementation would introduce its own storage port.
+- Visitor was rejected because there is a single decision type and no element hierarchy.
 
-Mutex único simplifica invariantes e race safety, mas limita paralelismo por processo. Sharding seria uma evolução medida, não uma abstração preventiva.
+A single mutex simplifies invariants and race safety but limits in-process parallelism. Sharding is a measured future optimization, not a preventive abstraction.
