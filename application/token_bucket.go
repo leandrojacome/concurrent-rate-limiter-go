@@ -18,17 +18,17 @@ type TokenBucket struct {
 	capacity        int
 	refillPerSecond float64
 	clock           Clock
-	buckets         map[string]bucket
+	buckets         map[domain.ClientKey]bucket
 }
 
 func NewTokenBucket(capacity int, refillPerSecond float64, clock Clock) *TokenBucket {
 	if capacity <= 0 || refillPerSecond <= 0 {
 		panic("capacity and refill rate must be positive")
 	}
-	return &TokenBucket{capacity: capacity, refillPerSecond: refillPerSecond, clock: clock, buckets: make(map[string]bucket)}
+	return &TokenBucket{capacity: capacity, refillPerSecond: refillPerSecond, clock: clock, buckets: make(map[domain.ClientKey]bucket)}
 }
 
-func (l *TokenBucket) Allow(_ context.Context, key string) domain.Decision {
+func (l *TokenBucket) Allow(_ context.Context, key domain.ClientKey) domain.Decision {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	now := l.clock.Now()

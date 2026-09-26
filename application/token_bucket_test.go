@@ -6,6 +6,8 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"github.com/leandrojacome/concurrent-rate-limiter-go/domain"
 )
 
 type fakeClock struct{ now time.Time }
@@ -21,7 +23,7 @@ func TestEnforcesCapacityUnderConcurrency(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if limiter.Allow(context.Background(), "client").Allowed {
+			if limiter.Allow(context.Background(), domain.ClientKey("client")).Allowed {
 				allowed.Add(1)
 			}
 		}()
@@ -35,14 +37,14 @@ func TestEnforcesCapacityUnderConcurrency(t *testing.T) {
 func TestRefillsOverTime(t *testing.T) {
 	clock := &fakeClock{now: time.Unix(0, 0)}
 	limiter := NewTokenBucket(1, 1, clock)
-	if !limiter.Allow(context.Background(), "client").Allowed {
+	if !limiter.Allow(context.Background(), domain.ClientKey("client")).Allowed {
 		t.Fatal("first request should pass")
 	}
-	if limiter.Allow(context.Background(), "client").Allowed {
+	if limiter.Allow(context.Background(), domain.ClientKey("client")).Allowed {
 		t.Fatal("second request should be denied")
 	}
 	clock.now = clock.now.Add(time.Second)
-	if !limiter.Allow(context.Background(), "client").Allowed {
+	if !limiter.Allow(context.Background(), domain.ClientKey("client")).Allowed {
 		t.Fatal("request should pass after refill")
 	}
 }

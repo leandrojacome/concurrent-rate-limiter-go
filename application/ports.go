@@ -9,5 +9,5 @@ import (
 
 type Clock interface{ Now() time.Time }
 type Limiter interface {
-	Allow(context.Context, string) domain.Decision
+	Allow(context.Context, domain.ClientKey) domain.Decision
 }
